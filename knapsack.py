@@ -42,3 +42,6 @@ for w in range(1, W + 1):
 
 print(dynamic_table)
 print(configurations)
+
+print("Best cost : " + str(dynamic_table[-1]))
+print("Best configuration : " + str(configurations[-1]))
