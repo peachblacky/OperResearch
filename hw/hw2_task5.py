@@ -4,32 +4,32 @@
 input_string = input()
 input_string = input_string.split("; ")
 
-total_engine_types = int(input_string[0])
-required_engines_per_type = [int(s) for s in input_string[1].split(" ")]
-cost_per_type = [int(s) for s in input_string[2].split(" ")]
-start_producing_per_type = [int(s) for s in input_string[3].split(" ")]
+TOTAL_ENGINE_TYPES = int(input_string[0])
+REQUIRED_PER_TYPE = [int(s) for s in input_string[1].split(" ")]
+COST_PER_TYPE = [int(s) for s in input_string[2].split(" ")]
+START_PRODUCTION_PER_TYPE = [int(s) for s in input_string[3].split(" ")]
+
+TOTAL_REQIRED = sum(REQUIRED_PER_TYPE)
 
 
-total_engines_required = sum(required_engines_per_type)
-
-dynamic_table = [[None for i in range(total_engines_required - required_engines_per_type[0] + 1)] for j in range(total_engine_types)]
+dynamic_table = [[None for i in range(TOTAL_REQIRED - REQUIRED_PER_TYPE[0] + 1)] for j in range(TOTAL_ENGINE_TYPES)]
 
 
-for i in range(required_engines_per_type[0], total_engines_required + 1):
-    value = i * cost_per_type[0]
+for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQIRED + 1):
+    value = i * COST_PER_TYPE[0]
     if i != 0:
-        value += start_producing_per_type[0]
-    dynamic_table[0][i - required_engines_per_type[0]] = value
+        value += START_PRODUCTION_PER_TYPE[0]
+    dynamic_table[0][i - REQUIRED_PER_TYPE[0]] = value
 
-for i in range(1, total_engine_types):
-    for j in range(i + 1, total_engines_required + 1):
-        for k in range(sum(required_engines_per_type[:i]), j + 1):  # searching for minimal value using prev row [Skj = min[0<=k<=j-1](S(k-1)j + f(x, y))]
-            cval = dynamic_table[i-1][k-required_engines_per_type[0]] + (j - k) * cost_per_type[i]
+for i in range(1, TOTAL_ENGINE_TYPES):
+    for j in range(i + 1, TOTAL_REQIRED + 1):
+        for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):  # searching for minimal value using prev row [Skj = min[0<=k<=j-1](S(k-1)j + f(x, y))]
+            cval = dynamic_table[i-1][k - REQUIRED_PER_TYPE[0]] + (j - k) * COST_PER_TYPE[i]
             if j != k:
-                cval += start_producing_per_type[i]
-            tested_value = dynamic_table[i][j - required_engines_per_type[0]]
+                cval += START_PRODUCTION_PER_TYPE[i]
+            tested_value = dynamic_table[i][j - REQUIRED_PER_TYPE[0]]
             if tested_value is None or cval <= tested_value:
-                dynamic_table[i][j - required_engines_per_type[0]] = cval
+                dynamic_table[i][j - REQUIRED_PER_TYPE[0]] = cval
 
 # print(dynamic_table)
-print(dynamic_table[total_engine_types - 1][total_engines_required - required_engines_per_type[0]])
+print(dynamic_table[TOTAL_ENGINE_TYPES - 1][TOTAL_REQIRED - REQUIRED_PER_TYPE[0]])
