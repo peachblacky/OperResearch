@@ -9,20 +9,20 @@ REQUIRED_PER_TYPE = [int(s) for s in input_string[1].split(" ")]
 COST_PER_TYPE = [int(s) for s in input_string[2].split(" ")]
 START_PRODUCTION_PER_TYPE = [int(s) for s in input_string[3].split(" ")]
 
-TOTAL_REQIRED = sum(REQUIRED_PER_TYPE)
+TOTAL_REQUIRED = sum(REQUIRED_PER_TYPE)
 
 
-dynamic_table = [[None for i in range(TOTAL_REQIRED - REQUIRED_PER_TYPE[0] + 1)] for j in range(TOTAL_ENGINE_TYPES)]
+dynamic_table = [[None for i in range(TOTAL_REQUIRED - REQUIRED_PER_TYPE[0] + 1)] for j in range(TOTAL_ENGINE_TYPES)]
 
 
-for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQIRED + 1):
+for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQUIRED + 1):
     value = i * COST_PER_TYPE[0]
     if i != 0:
         value += START_PRODUCTION_PER_TYPE[0]
     dynamic_table[0][i - REQUIRED_PER_TYPE[0]] = value
 
 for i in range(1, TOTAL_ENGINE_TYPES):
-    for j in range(i + 1, TOTAL_REQIRED + 1):
+    for j in range(i + 1, TOTAL_REQUIRED + 1):
         for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):  # searching for minimal value using prev row [Skj = min[0<=k<=j-1](S(k-1)j + f(x, y))]
             cval = dynamic_table[i-1][k - REQUIRED_PER_TYPE[0]] + (j - k) * COST_PER_TYPE[i]
             if j != k:
@@ -32,4 +32,4 @@ for i in range(1, TOTAL_ENGINE_TYPES):
                 dynamic_table[i][j - REQUIRED_PER_TYPE[0]] = cval
 
 # print(dynamic_table)
-print(dynamic_table[TOTAL_ENGINE_TYPES - 1][TOTAL_REQIRED - REQUIRED_PER_TYPE[0]])
+print(dynamic_table[TOTAL_ENGINE_TYPES - 1][TOTAL_REQUIRED - REQUIRED_PER_TYPE[0]])
