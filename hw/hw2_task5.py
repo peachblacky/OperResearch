@@ -13,9 +13,9 @@ TOTAL_REQUIRED = sum(REQUIRED_PER_TYPE)
 
 
 dynamic_table = [[None for i in range(TOTAL_REQUIRED - REQUIRED_PER_TYPE[0] + 1)] for j in range(TOTAL_ENGINE_TYPES)]
+# горизонтально - необходимое число моторов (как сумма по типам), вертикально - число доступных типов моторов
 
-
-for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQUIRED + 1):
+for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQUIRED + 1):  # все моторы заменяются мотором первого типа
     value = i * COST_PER_TYPE[0]
     if i != 0:
         value += START_PRODUCTION_PER_TYPE[0]
@@ -23,7 +23,7 @@ for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQUIRED + 1):
 
 for i in range(1, TOTAL_ENGINE_TYPES):
     for j in range(i + 1, TOTAL_REQUIRED + 1):
-        for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):
+        for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):  # сдвигаем вправо границу, с которой начинаем производить моторы типа i
             cval = dynamic_table[i-1][k - REQUIRED_PER_TYPE[0]] + (j - k) * COST_PER_TYPE[i]
             if j != k:
                 cval += START_PRODUCTION_PER_TYPE[i]
@@ -31,5 +31,5 @@ for i in range(1, TOTAL_ENGINE_TYPES):
             if tested_value is None or cval <= tested_value:
                 dynamic_table[i][j - REQUIRED_PER_TYPE[0]] = cval
 
-# print(dynamic_table)
+print(dynamic_table)
 print(dynamic_table[TOTAL_ENGINE_TYPES - 1][TOTAL_REQUIRED - REQUIRED_PER_TYPE[0]])
