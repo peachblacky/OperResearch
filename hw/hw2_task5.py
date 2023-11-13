@@ -23,7 +23,7 @@ for i in range(REQUIRED_PER_TYPE[0], TOTAL_REQUIRED + 1):
 
 for i in range(1, TOTAL_ENGINE_TYPES):
     for j in range(i + 1, TOTAL_REQUIRED + 1):
-        for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):  # searching for minimal value using prev row [Skj = min[0<=k<=j-1](S(k-1)j + f(x, y))]
+        for k in range(sum(REQUIRED_PER_TYPE[:i]), j + 1):
             cval = dynamic_table[i-1][k - REQUIRED_PER_TYPE[0]] + (j - k) * COST_PER_TYPE[i]
             if j != k:
                 cval += START_PRODUCTION_PER_TYPE[i]
