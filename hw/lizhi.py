@@ -37,5 +37,5 @@ for t in range(TOTAL_STAGES):  # обратный ход
 best_cost = BUY_COST[0]+dynamic_table[0][0]
 print('Best cost is ' + str(BUY_COST[0]+dynamic_table[0][0]))
 print('Best strategy is ' + str(best_change_strategy))
-print(dynamic_table)
+# print(dynamic_table)
 # print(change_strategy)
