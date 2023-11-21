@@ -19,11 +19,7 @@ def read_input(input_file_name: str):
             weighs.append(int(row[1]))
     return max_weight, len(costs), weighs, costs
 
-def extract_subset(weights, costs, i, j):
-    max_cost = min(costs[i], costs[i])
-    weight_subset = []
-    cost_subset = []
-    for
+
 
 def solve_dynamically(max_weight, total_items, weights, costs):
     dynamic_table = [[0 for _ in range(max_weight + 1)] for _ in range(total_items)]
@@ -51,27 +47,38 @@ def solve_dynamically(max_weight, total_items, weights, costs):
         configuration[0] = 1
     return dynamic_table[-1][-1], configuration
 
+
 def solve_g(max_weight, total_items, weights, costs):
     best_cost = max(costs)
+    costs = np.array(costs)
+    weights = np.array(weights)
+    weights = weights[costs.argsort()]
+    costs = costs[costs.argsort()]
     for i in range(total_items - 1):
         for k in range(i + 1, total_items):
+            # print(i, k)
+            pair_weight = weights[i] + weights[k]
+            if pair_weight > max_weight:
+                continue
+            # cost_subset, weight_subset = extract_subset(weights, costs, i, k, total_items)
+            cost_subset, weight_subset = costs[:i], weights[:i]
+            subset_solution = solve_greedy(max_weight - pair_weight, weight_subset, cost_subset)
+            current_cost = costs[i] + costs[k] + subset_solution
+            if current_cost > best_cost:
+                best_cost = current_cost
+    return best_cost
 
 
-
-
-def solve_greedy(max_weight, total_items, weights):
-    weights = np.array(weights)
-    indexes = np.array([i for i in range(total_items)])
-    sorted_weight_indexes = weights.argsort()
-    indexes_sorted = indexes[sorted_weight_indexes[::-1]]
-    weights_sorted = weights[sorted_weight_indexes[::-1]]
-
-    current_weight = 0
-    optimal_configuration = np.zeros(total_items)
-    for i in range(len(weights_sorted)):
-        w = weights_sorted[i]
-        new_weight = current_weight + w
-        if new_weight <= max_weight:
-            current_weight += w
-            optimal_configuration[indexes_sorted[i]] = 1
-    return current_weight, optimal_configuration
+def solve_greedy(max_weight, weights, costs):
+    stacked = np.stack([costs, weights], axis=1)
+    stacked = stacked[(stacked[:, 0] / stacked[:, 1]).argsort()]
+    stacked = stacked[::-1]
+    running_cost = 0
+    W = max_weight
+    for e in stacked:
+        cur_weight = e[1]
+        if W - cur_weight >= 0:
+            W -= cur_weight
+            running_cost += e[0]
+    max_cost = max(costs) if len(costs) > 0 else 0
+    return max(running_cost, max_cost)
