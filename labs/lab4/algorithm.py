@@ -56,11 +56,9 @@ def solve_g(max_weight, total_items, weights, costs):
     costs = costs[costs.argsort()]
     for i in range(total_items - 1):
         for k in range(i + 1, total_items):
-            # print(i, k)
             pair_weight = weights[i] + weights[k]
             if pair_weight > max_weight:
                 continue
-            # cost_subset, weight_subset = extract_subset(weights, costs, i, k, total_items)
             cost_subset, weight_subset = costs[:i], weights[:i]
             subset_solution = solve_greedy(max_weight - pair_weight, weight_subset, cost_subset)
             current_cost = costs[i] + costs[k] + subset_solution
