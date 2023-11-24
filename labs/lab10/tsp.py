@@ -18,7 +18,7 @@ class City:
 class TSPRoute:
     def __init__(self, route: [City]):
         self.route = route
-        self.length = len(route)
+        self.cities_number = len(route)
 
     def __str__(self):
         result = ''
@@ -28,7 +28,7 @@ class TSPRoute:
 
     def route_length(self):
         total_length = 0
-        for i in range(-1, self.length - 1):
+        for i in range(-1, self.cities_number - 1):
             cur_city = self.route[i]
             next_city = self.route[i + 1]
             total_length += cur_city.distance(next_city)
