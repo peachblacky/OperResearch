@@ -29,7 +29,7 @@ class TSPRoute:
         new_route = []
         for c in self.route[:first_index]:
             new_route.append(c)
-        for i in range(second_index - 1, first_index, -1):
+        for i in range(second_index - 1, first_index - 1, -1):
             new_route.append(self.route[i])
         for c in self.route[second_index:]:
             new_route.append(c)

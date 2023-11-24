@@ -8,3 +8,5 @@ if __name__ == '__main__':
 
     route = TSPRoute(cities)
     print(str(route))
+    opt2_neighbour = route.get_2opt_neighbour(15, 29)
+    print(str(opt2_neighbour))
