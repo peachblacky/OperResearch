@@ -7,3 +7,4 @@ if __name__ == '__main__':
     print([str(c) for c in cities])
 
     route = TSPRoute(cities)
+    print(str(route))

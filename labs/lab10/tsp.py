@@ -19,6 +19,12 @@ class TSPRoute:
         self.route = route
         self.length = len(route)
 
+    def __str__(self):
+        result = ''
+        for city in self.route:
+            result += str(city.index) + ' -> '
+        return result
+
     def get_2opt_neighbour(self, first_index, second_index):
         new_route = []
         for c in self.route[:first_index]:
