@@ -13,6 +13,7 @@ def read_data():
             line = lines[i].strip().split(" ")
             x_coord = float(line[1])
             y_coord = float(line[2])
-            cities.append(City(x_coord, y_coord))
+            index = int(line[0])
+            cities.append(City(x_coord, y_coord, index))
             i += 1
         return cities
