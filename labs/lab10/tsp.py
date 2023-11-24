@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class City:
@@ -35,3 +36,15 @@ class TSPRoute:
             new_route.append(c)
 
         return TSPRoute(new_route)
+
+    def draw_route(self):
+        x = [c.x for c in self.route]
+        x.append(x[0])
+        y = [c.y for c in self.route]
+        y.append(y[0])
+        plt.plot(x, y, color='green', linestyle='dashed', linewidth=1,
+                 marker='o', markerfacecolor='blue', markersize=4)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Route graph')
+        plt.show()
