@@ -51,7 +51,8 @@ class AnnealingSimulator:
         return best_route
 
     def print_progress(self, epoch, cur_best_route: TSPRoute):
-        print('Epoch ' + str(epoch) + ' Temp: ' + str(self.temperature) + '. Cur. best: ' + str(cur_best_route.route_length()))
+        print('Epoch ' + str(epoch) + ' Temp: ' + str(self.temperature) + '. Cur. best: ' + str(
+            cur_best_route.route_length()))
 
     def select_random_neighbour(self):
         swapping_indexes = np.random.choice(self.route.cities_number, 2)
@@ -59,9 +60,16 @@ class AnnealingSimulator:
         return self.route.get_2opt_neighbour(swapping_indexes[0], swapping_indexes[1])
 
     def __calculate_starting_temperature(self):
+        if self.route.cities_number > 200:
+            return self.__calculate_starting_temperature_stochastic()
+        else:
+            return self.__calculate_starting_temperature_full()
+
+    def __calculate_starting_temperature_full(self):
         max_delta = 0
         for i in range(self.route.cities_number - 1):
             for j in range(i + 1, self.route.cities_number):
+                print(i, j)
                 neighbour = self.route.get_2opt_neighbour(i, j)
                 cur_route_length = self.route.route_length()
                 neighbour_route_length = neighbour.route_length()
@@ -70,4 +78,14 @@ class AnnealingSimulator:
                     max_delta = delta
         return max_delta
 
-
+    def __calculate_starting_temperature_stochastic(self):
+        max_delta = 0
+        for k in range(500):
+            # print(k)
+            neighbour = self.select_random_neighbour()
+            cur_route_length = self.route.route_length()
+            neighbour_route_length = neighbour.route_length()
+            delta = cur_route_length - neighbour_route_length
+            if delta > max_delta:
+                max_delta = delta
+        return max_delta
