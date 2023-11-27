@@ -1,8 +1,8 @@
 from labs.lab10.tsp import City
 
 
-def read_data():
-    with open("./data/wi29.tsp") as f:
+def read_data(file_path : str):
+    with open(file_path) as f:
         lines = f.readlines()
         i = 0
         while lines[i].strip() != 'NODE_COORD_SECTION':
