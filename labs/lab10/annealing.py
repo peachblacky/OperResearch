@@ -21,8 +21,10 @@ class AnnealingSimulator:
     def anneal(self):
         active = True
         best_route = self.route
-        # while active:
-        for epoch in range(1000):
+        epoch = 0
+        unchanged_iterations = 0
+        while active:
+            unchanged_iterations += 1
             for _ in range(self.route.cities_number):
                 neighbour = self.select_random_neighbour()
                 cur_route_length = self.route.route_length()
@@ -36,9 +38,14 @@ class AnnealingSimulator:
                         self.route = neighbour
                 if self.route.route_length() < best_route.route_length():
                     best_route = self.route
+                    unchanged_iterations = 0
             self.temperature *= self.cool_down_coef
+            if unchanged_iterations > 50:
+                active = False
             if epoch % 10 == 0:
                 self.print_progress(epoch, best_route)
+            epoch += 1
+
         return best_route
 
     def print_progress(self, epoch, cur_best_route: TSPRoute):
