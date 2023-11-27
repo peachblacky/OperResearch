@@ -14,6 +14,8 @@ class AnnealingSimulator:
         random.shuffle(cities)
         self.route = TSPRoute(cities)
         self.temperature = self.__calculate_starting_temperature() if starting_temperature < 0 else starting_temperature
+        self.stop_parameter = 50
+        self.logging_frequency = 10
         print('Starting route is : ' + str(self.route))
         print('Starting route length : ' + str(self.route.route_length()))
         print('Starting temperature is : ' + str(self.temperature))
@@ -40,9 +42,9 @@ class AnnealingSimulator:
                     best_route = self.route
                     unchanged_iterations = 0
             self.temperature *= self.cool_down_coef
-            if unchanged_iterations > 50:
+            if unchanged_iterations > self.stop_parameter:
                 active = False
-            if epoch % 10 == 0:
+            if epoch % self.logging_frequency == 0:
                 self.print_progress(epoch, best_route)
             epoch += 1
 
