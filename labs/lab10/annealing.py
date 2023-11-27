@@ -15,6 +15,7 @@ class AnnealingSimulator:
         self.route = TSPRoute(cities)
         self.temperature = self.__calculate_starting_temperature() if starting_temperature < 0 else starting_temperature
         print('Starting route is : ' + str(self.route))
+        print('Starting route length : ' + str(self.route.route_length()))
         print('Starting temperature is : ' + str(self.temperature))
 
     def anneal(self):

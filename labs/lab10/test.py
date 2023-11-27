@@ -6,7 +6,7 @@ if __name__ == '__main__':
     cities = data.read_data()
     # print([str(c) for c in cities])
     algo = AnnealingSimulator(cities, cool_down_coef=0.99)
-    print(algo.route.route_length())
+    # print(algo.route.route_length())
     # algo.route.draw_route()
     solution = algo.anneal()
     print(str(solution))
