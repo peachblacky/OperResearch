@@ -18,3 +18,7 @@ class TabuSearchCombination:
     def get_hamming_neighbour(self, indexes: [int]):
         new_combination = self.combination.copy()
         new_combination[indexes] ^= 1
+        return TabuSearchCombination(new_combination)
+
+    def get_hamming_distance(self, other):
+        return np.count_nonzero(self.combination != other.combination)

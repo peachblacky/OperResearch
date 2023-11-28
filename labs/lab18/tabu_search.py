@@ -41,5 +41,5 @@ class TabuSearcher:
         for i in range(self.cities_number - 1):
             for j in range(i + 1, self.cities_number):
                 if np.random.random() < self.neighbourhood_probability:
-                    neighbourhood.append(self.cur_combination.get_hamming_neighbour((i, j)))
+                    neighbourhood.append(self.cur_combination.get_hamming_neighbour([i, j]))
         return neighbourhood
