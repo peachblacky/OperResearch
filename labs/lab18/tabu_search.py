@@ -1,32 +1,45 @@
 import random
 import numpy as np
-from placement import City
+from objects import City, TabuSearchCombination
 
 np.random.seed(42)
 
 
 class TabuSearcher:
-    def __init__(self, cities: [City], cost_per_shop=3000, neighbourhood_probability=0.25):
+    cur_combination: TabuSearchCombination
+
+    def __init__(self, cities: [City], cost_per_shop=3000, neighbourhood_probability=0.25, neighbourhood_radius=2):
         self.cities = cities
         self.cities_number = len(cities)
+        self.cost_per_shop = cost_per_shop
         self.neighbourhood_probability = neighbourhood_probability
+        self.neighbourhood_radius = neighbourhood_radius
 
-        self.cur_combination = np.zeros(self.cities_number, dtype='int')
         self.generate_starting_combination()
 
-        self.cost_per_shop = cost_per_shop
+        self.tabu_list = []
 
     def generate_starting_combination(self):
+        combination = np.zeros(self.cities_number, dtype='int')
         number_of_shops = np.random.randint(0, self.cities_number // 5)
         shop_indexes = set(np.random.randint(0, self.cities_number, number_of_shops))
-        self.cur_combination[list(shop_indexes)] = 1
+        combination[list(shop_indexes)] = 1
+        self.cur_combination = TabuSearchCombination(combination)
 
     def calculate_cost(self):
         cost = 0
-        cur_combination_bool = self.cur_combination != 0
+        cur_combination_bool = self.cur_combination.combination != 0
         for city_index in range(self.cities_number):
-            if self.cur_combination[city_index] == 1:
+            if self.cur_combination.combination[city_index] == 1:
                 cost += self.cost_per_shop
             else:
                 cost += self.cities[city_index].find_nearest_shop_distance(cur_combination_bool)
         return cost
+
+    def get_stochastic_neighbourhood(self):
+        neighbourhood = []
+        for i in range(self.cities_number - 1):
+            for j in range(i + 1, self.cities_number):
+                if np.random.random() < self.neighbourhood_probability:
+                    neighbourhood.append(self.cur_combination.get_hamming_neighbour((i, j)))
+        return neighbourhood

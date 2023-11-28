@@ -9,3 +9,12 @@ class City:
 
     def find_nearest_shop_distance(self, opened_shops: [bool]):
         return min(self.distances[opened_shops])
+
+
+class TabuSearchCombination:
+    def __init__(self, combination):
+        self.combination = combination
+
+    def get_hamming_neighbour(self, indexes: [int]):
+        new_combination = self.combination.copy()
+        new_combination[indexes] ^= 1

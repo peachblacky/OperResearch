@@ -1,4 +1,4 @@
-from labs.lab18.placement import City
+from labs.lab18.objects import City
 
 
 def read_data(file_path: str):
