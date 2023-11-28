@@ -4,8 +4,8 @@ from tsp import TSPRoute, City
 import random
 import numpy as np
 
-random.seed(42)
-np.random.seed(42)
+# random.seed(42)
+# np.random.seed(42)
 
 
 class AnnealingSimulator:
@@ -69,7 +69,6 @@ class AnnealingSimulator:
         max_delta = 0
         for i in range(self.route.cities_number - 1):
             for j in range(i + 1, self.route.cities_number):
-                print(i, j)
                 neighbour = self.route.get_2opt_neighbour(i, j)
                 cur_route_length = self.route.route_length()
                 neighbour_route_length = neighbour.route_length()
