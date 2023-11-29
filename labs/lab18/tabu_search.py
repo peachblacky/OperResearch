@@ -1,4 +1,6 @@
 import random
+import sys
+
 import numpy as np
 from objects import City, TabuSearchCombination
 from collections import deque
@@ -8,6 +10,8 @@ np.random.seed(42)
 
 class TabuSearcher:
     cur_combination: TabuSearchCombination
+    best_combination: TabuSearchCombination
+    best_cost: int
 
     def __init__(self, cities: [City], cost_per_shop=3000, neighbourhood_probability=0.25, neighbourhood_radius=2,
                  history_length=5):
@@ -17,28 +21,42 @@ class TabuSearcher:
         self.neighbourhood_probability = neighbourhood_probability
         self.neighbourhood_radius = neighbourhood_radius
         self.history_length = history_length
+        self.stop_threshold = 100
 
         self.generate_starting_combination()
 
         self.tabu_list = deque()
         self.tabu_list = deque()
 
-    def solve(self):
+        self.best_cost = sys.maxsize
+
+    def solve(self) -> (TabuSearchCombination, int):
         active = True
-        best_route = self.cur_combination
-        epoch = 0
+        iteration = 0
         unchanged_iterations = 0
         while active:
-            # TODO
-            pass
+            unchanged_iterations += 1
+            neighbourhood = self.__get_stochastic_neighbourhood()
+            min_cost = sys.maxsize
+            min_neighbour = None
+            for n in neighbourhood:
+                neighbour_cost = self.calculate_cost(n)
+                if neighbour_cost < min_cost:
+                    min_neighbour = n
+                    min_cost = neighbour_cost
+            if min_cost < self.best_cost:
+                self.best_combination = min_neighbour
+                self.best_cost = min_cost
+                unchanged_iterations = 0
+            self.cur_combination = min_neighbour
 
-    def is_tabu(self, indexes: [int]):
-        return indexes in self.tabu_list
+            if unchanged_iterations > self.stop_threshold:
+                active = False
 
-    def update_tabu_v1(self, indexes: [int]):
-        self.tabu_list.append(indexes)
-        if len(self.tabu_list) > self.history_length:
-            self.tabu_list.popleft()
+            if iteration % 10 == 0:
+                print('Iteration ' + str(iteration) + ': Cost= ' + str(self.best_cost))
+            iteration += 1
+        return self.best_combination, self.best_cost
 
     def generate_starting_combination(self):
         combination = np.zeros(self.cities_number, dtype='int')
@@ -47,7 +65,7 @@ class TabuSearcher:
         combination[list(shop_indexes)] = 1
         self.cur_combination = TabuSearchCombination(combination)
 
-    def calculate_cost(self, combination : TabuSearchCombination):
+    def calculate_cost(self, combination: TabuSearchCombination) -> int:
         cost = 0
         cur_combination_bool = combination.combination != 0
         for city_index in range(self.cities_number):
@@ -57,10 +75,19 @@ class TabuSearcher:
                 cost += self.cities[city_index].find_nearest_shop_distance(cur_combination_bool)
         return cost
 
-    def __get_stochastic_neighbourhood(self):
+    def __is_tabu(self, indexes: [int]) -> bool:
+        return indexes in self.tabu_list
+
+    def __update_tabu_v1(self, indexes: [int]):
+        self.tabu_list.append(indexes)
+        if len(self.tabu_list) > self.history_length:
+            self.tabu_list.popleft()
+
+    def __get_stochastic_neighbourhood(self) -> [TabuSearchCombination]:
         neighbourhood = []
+        # TODO rework to work with different neighbourhood radia
         for i in range(self.cities_number - 1):
             for j in range(i + 1, self.cities_number):
-                if np.random.random() < self.neighbourhood_probability and not self.is_tabu([i, j]):
+                if np.random.random() < self.neighbourhood_probability and not self.__is_tabu([i, j]):
                     neighbourhood.append(self.cur_combination.get_hamming_neighbour([i, j]))
         return neighbourhood
