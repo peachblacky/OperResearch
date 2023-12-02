@@ -5,7 +5,8 @@ import numpy as np
 from objects import City, TabuSearchCombination
 from collections import deque
 
-np.random.seed(42)
+
+# np.random.seed(42)
 
 
 class TabuSearcher:
@@ -14,7 +15,7 @@ class TabuSearcher:
     best_cost: int
 
     def __init__(self, cities: [City], cost_per_shop=3000, neighbourhood_probability=0.25, neighbourhood_radius=2,
-                 history_length=5):
+                 history_length=3):
         self.cities = cities
         self.cities_number = len(cities)
         self.cost_per_shop = cost_per_shop
@@ -75,6 +76,10 @@ class TabuSearcher:
                 cost += self.cities[city_index].find_nearest_shop_distance(cur_combination_bool)
         return cost
 
+    @staticmethod
+    def get_combination_cities(combination: TabuSearchCombination) -> [int]:
+        return [i + 1 for i, elem in enumerate(combination.combination) if elem == 1]
+
     def __is_tabu(self, indexes: [int]) -> bool:
         return indexes in self.tabu_list
 
@@ -85,7 +90,7 @@ class TabuSearcher:
 
     def __get_stochastic_neighbourhood(self) -> [TabuSearchCombination]:
         neighbourhood = []
-        # TODO rework to work with different neighbourhood radia
+        # TODO rework to work with different neighbourhood radii
         for i in range(self.cities_number - 1):
             for j in range(i + 1, self.cities_number):
                 if np.random.random() < self.neighbourhood_probability and not self.__is_tabu([i, j]):

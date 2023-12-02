@@ -12,7 +12,7 @@ class City:
 
 
 class TabuSearchCombination:
-    def __init__(self, combination):
+    def __init__(self, combination: [int]):
         self.combination = combination
 
     def get_hamming_neighbour(self, indexes: [int]):
