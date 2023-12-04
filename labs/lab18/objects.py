@@ -7,8 +7,11 @@ class City:
         self.city_index = index
         self.distances = np.array(distances)
 
+    def add_distance(self, client_index, distance):
+        self.distances[client_index] = distance
+
     def find_nearest_shop_distance(self, opened_shops: [bool]):
-        return min(self.distances[opened_shops])
+        return min(d for d in self.distances[opened_shops]) if True in opened_shops else 100000
 
 
 class TabuSearchCombination:

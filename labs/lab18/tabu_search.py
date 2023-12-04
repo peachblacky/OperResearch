@@ -42,7 +42,7 @@ class TabuSearcher:
             min_neighbour = None
             for n in neighbourhood:
                 neighbour_cost = self.calculate_cost(n)
-                if neighbour_cost < min_cost:
+                if neighbour_cost <= min_cost:
                     min_neighbour = n
                     min_cost = neighbour_cost
             if min_cost < self.best_cost:
@@ -54,7 +54,7 @@ class TabuSearcher:
             if unchanged_iterations > self.stop_threshold:
                 active = False
 
-            if iteration % 10 == 0:
+            if iteration % 50 == 0:
                 print('Iteration ' + str(iteration) + ': Cost= ' + str(self.best_cost))
             iteration += 1
         return self.best_combination, self.best_cost
