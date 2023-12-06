@@ -15,7 +15,7 @@ def read_data(file_path: str):
             client_index = int(line_data[1]) - 1
             transportation_cost = int(line_data[2])
             if city_index not in city_dict:
-                city_dict[city_index] = City(city_index, [100000] * dimension)
+                city_dict[city_index] = City(city_index, [1000000] * dimension)
             city_dict[city_index].add_distance(client_index, transportation_cost)
 
         # i = 4
