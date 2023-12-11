@@ -83,7 +83,7 @@ if model.num_solutions:
 # TASK 1
 
 print()
-print('### ЗАДАНИЕ 1')
+print('### TASK 1')
 
 mip = model.objective_value
 new_model = Model(solver_name=CBC)
@@ -168,9 +168,9 @@ n, V = len(selected_places), set(range(len(selected_places)))
 new_model.clear()
 
 c = [[0 if i == j
-        else dists[i][j - i - 1] if j > i
-        else dists[j][i - j - 1]
-        for j in goroda] for i in goroda]
+      else dists[i][j - i - 1] if j > i
+else dists[j][i - j - 1]
+      for j in goroda] for i in goroda]
 
 x = [[new_model.add_var(var_type=BINARY) for j in V] for i in V]
 
@@ -187,7 +187,7 @@ iteration = 0
 # first_cycle = set()
 time_start = time.time()
 while True:
-    iteration = iteration+1
+    iteration = iteration + 1
     cycle_counter = 0
     first_cycle = set()
     new_model.optimize()
