@@ -48,6 +48,21 @@ def solve_dynamically(max_weight, total_items, weights, costs):
     return dynamic_table[-1][-1], configuration
 
 
+def solve_dynamically_tinkoff(total_money, total_items, costs):
+    dynamic_table = [[0 for _ in range(total_money + 1)] for _ in range(total_items)]
+
+    for w in range(total_money + 1):
+        dynamic_table[0][w] = w - costs[0] if costs[0] <= w else w
+
+    for item in range(1, total_items):
+        item_cost = costs[item]
+        for w in range(total_money + 1):
+            cur_change = dynamic_table[item - 1][w]
+            new_value = cur_change if cur_change < item_cost else cur_change - item_cost
+            dynamic_table[item][w] = new_value
+    return max(dynamic_table[-1])
+
+
 def solve_g(max_weight, total_items, weights, costs):
     best_cost = max(costs)
     costs = np.array(costs)

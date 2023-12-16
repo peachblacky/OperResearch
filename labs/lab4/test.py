@@ -16,6 +16,11 @@ def test_dynamical(max_weight, total_items, weights, costs):
     # print('Best dynamical config is : ' + str(result_config))
 
 
+def test_dynamical_tinkoff(max_weight, total_items, costs):
+    result_cost = alg.solve_dynamically_tinkoff(max_weight, total_items, costs)
+    print('Best dynamical cost is : ' + str(result_cost))
+
+
 def test_g(max_weight, total_items, weights, costs):
     result_cost = alg.solve_g(max_weight, total_items, weights, costs)
     result_w = 0
@@ -28,19 +33,15 @@ def test_g(max_weight, total_items, weights, costs):
 
 def test_simple_greedy(max_weight, total_items, weights, costs):
     result_cost = alg.solve_greedy(max_weight, weights, costs)
-    result_w = 0
-    # for i in range(len(result_config)):
-    #     if result_config[i]:
-    #         result_w += weights[i]
     print('Best simple greedy cost is : ' + str(result_cost))
-    # print('Best G weight is : ' + str(result_w))
 
 
 if __name__ == '__main__':
     max_weights, total_items, weights, costs = alg.read_input(test_file_name)
-    start = time.time_ns()
+    # start = time.time_ns()
     # test_dynamical(max_weights, total_items, weights, costs)
-    test_g(max_weights, total_items, weights, costs)
+    # test_g(max_weights, total_items, weights, costs)
     # test_simple_greedy(max_weights, total_items, weights, costs)
-    end = time.time_ns()
-    print('G3/4 elapsed time is ' + str((end - start) / 10**9) + ' seconds')
+    test_dynamical_tinkoff(24, 7, [5, 4, 1, 3, 2, 2, 7])
+    # end = time.time_ns()
+    # print('G3/4 elapsed time is ' + str((end - start) / 10**9) + ' seconds')
