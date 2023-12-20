@@ -64,143 +64,134 @@ for (i, j) in product(V - {0}, V - {0}):
         model += y[i] - (n + 1) * x[i][j] >= y[j] - n
 
 # optimizing
+model.verbose = 0
 model.optimize()
 
 # checking if a solution was found
 if model.num_solutions:
     out.write('route with total distance %g found: %s'
               % (model.objective_value, places[0]))
-    nc = 0
+    cur_city = 0
     while True:
-        nc = [i for i in V if x[nc][i].x >= 0.99][0]
-        out.write(' -> %s' % places[nc])
-        if nc == 0:
+        cur_city = [i for i in V if x[cur_city][i].x >= 0.99][0]
+        out.write(' -> %s' % places[cur_city])
+        if cur_city == 0:
             break
     out.write('\n')
 
 #### YOUR CODE HERE VVVVVVVVVVVVVVVVVV
 
 # TASK 1
+print('\n ---------------------------- TASK 1 SECTION START')
 
-print()
-print('### TASK 1')
+integer_solution = model.objective_value
 
-mip = model.objective_value
-new_model = Model(solver_name=CBC)
+mixed_integer_model = Model(solver_name=CBC)
+mixed_integer_model.verbose = 0
 
-x = [[new_model.add_var() for j in V] for i in V]
+x = [[mixed_integer_model.add_var() for j in V] for i in V]
 
-y = [new_model.add_var() for i in V]
+y = [mixed_integer_model.add_var() for i in V]
 
-new_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
-
-for i in V:
-    new_model += xsum(x[i][j] for j in V - {i}) == 1
+mixed_integer_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
 
 for i in V:
-    new_model += xsum(x[j][i] for j in V - {i}) == 1
+    mixed_integer_model += xsum(x[i][j] for j in V - {i}) == 1
+
+for i in V:
+    mixed_integer_model += xsum(x[j][i] for j in V - {i}) == 1
 
 for (i, j) in product(V - {0}, V - {0}):
     if i != j:
-        new_model += y[i] - (n + 1) * x[i][j] >= y[j] - n
+        mixed_integer_model += y[i] - (n + 1) * x[i][j] >= y[j] - n
 
-new_model.optimize()
+mixed_integer_model.optimize()
 
-lp = new_model.objective_value
+mixed_integer_solution = mixed_integer_model.objective_value
 
-print('F_mip = ', mip)
-print('F_lp = ', lp)
-print('F_mip - F_lp = ', mip - lp)
-print('###')
-print()
+print('F_integer = ', integer_solution)
+print('F_mixed = ', mixed_integer_solution)
+print('Absolute Integer Gap is: ', integer_solution - mixed_integer_solution)
+print('---------------------------- TASK 1 SECTION END\n')
 
 # TASK 2
+print('\n ---------------------------- TASK 2 SECTION START')
+task2_model = Model(solver_name=CBC)
 
-print('### ЗАДАНИЕ 2')
-new_model.clear()
+x = [[task2_model.add_var(var_type=BINARY) for j in V] for i in V]
 
-x = [[new_model.add_var(var_type=BINARY) for j in V] for i in V]
-
-new_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
+task2_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
 
 for i in V:
-    new_model += xsum(x[i][j] for j in V - {i}) == 1
+    task2_model += xsum(x[i][j] for j in V - {i}) == 1
 for i in V:
-    new_model += xsum(x[j][i] for j in V - {i}) == 1
+    task2_model += xsum(x[j][i] for j in V - {i}) == 1
 
-new_model.optimize()
+task2_model.verbose = 0
+task2_model.optimize()
 
-if new_model.num_solutions:
-    print('Решение = ', new_model.objective_value)
+if task2_model.num_solutions > 0:
+    print('Optimal tour length is: ', task2_model.objective_value)
     visited_places = V.copy()
-    print('Путь: ')
+    print('Cycles are: ')
     while True:
-        nc = visited_places.pop()
-        visited_places.add(nc)
-        start = nc
-        print(places[nc], end='')
+        cur_city = visited_places.pop()
+        visited_places.add(cur_city)
+        start = cur_city
+        print('\n -> ', places[cur_city], end='')
         while True:
             for i in visited_places:
-                if x[nc][i].x > 0.99:
-                    nc = i
+                if x[cur_city][i].x > 0.99:
+                    cur_city = i
                     break
-            print('->', places[nc], end='')
-            visited_places.remove(nc)
-            if nc == start:
-                print()
+            visited_places.remove(cur_city)
+            if cur_city == start:
                 break
+            print(' -> ', places[cur_city], end='')
         if len(visited_places) == 0:
             break
-print('###')
-print()
+print('\n ---------------------------- TASK 2 SECTION END')
 
 # TASK 3
+print('\n ---------------------------- TASK 3 SECTION START')
 
-goroda = {0, 1, 2, 3, 9, 10, 11, 12}
-print(goroda)
+cities_indexes = {0, 2, 4, 6, 8, 10, 11, 12}
+selected_cities = [places[i] for i in cities_indexes]
+print(selected_cities)
 
-selected_places = [places[i] for i in goroda]
-print('Выбрали города: ')
-print(selected_places)
-print()
+n, V = len(selected_cities), set(range(len(selected_cities)))
+task3_model = Model(solver_name=CBC)
+task3_model.verbose = 0
 
-n, V = len(selected_places), set(range(len(selected_places)))
-new_model.clear()
+c = [[0 if i == j else dists[i][j - i - 1] if j > i else dists[j][i - j - 1] for j in cities_indexes] for i in
+     cities_indexes]
 
-c = [[0 if i == j
-      else dists[i][j - i - 1] if j > i
-else dists[j][i - j - 1]
-      for j in goroda] for i in goroda]
-
-x = [[new_model.add_var(var_type=BINARY) for j in V] for i in V]
+x = [[task3_model.add_var(var_type=BINARY) for j in V] for i in V]
 
 for i in V:
-    new_model += xsum(x[i][j] for j in V - {i}) == 1
+    task3_model += xsum(x[i][j] for j in V - {i}) == 1
 for i in V:
-    new_model += xsum(x[j][i] for j in V - {i}) == 1
+    task3_model += xsum(x[j][i] for j in V - {i}) == 1
 
-new_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
+task3_model.objective = minimize(xsum(c[i][j] * x[i][j] for i in V for j in V))
 
-my_time = 0
 iteration = 0
-# cycle_counter = 0
-# first_cycle = set()
 time_start = time.time()
 while True:
     iteration = iteration + 1
     cycle_counter = 0
     first_cycle = set()
-    new_model.optimize()
-    if new_model.num_solutions:
-        print('### Итерация ', iteration)
-        print('Полученное решение = ', new_model.objective_value)
+    task3_model.optimize()
+    if task3_model.num_solutions:
+        print('ITERATION ', iteration)
+        print('Current solution = ', task3_model.objective_value)
         visited_places = V.copy()
-        print('Путь: ')
+        print('Paths: ')
         while True:
             nc = visited_places.pop()
             visited_places.add(nc)
             start = nc
-            print(selected_places[nc], end='')
+            print(' ->', selected_cities[nc], end='')
             cycle_counter += 1
             if cycle_counter == 1:
                 first_cycle.add(nc)
@@ -209,26 +200,24 @@ while True:
                     if x[nc][i].x > 0.99:
                         nc = i
                         break
-                print('->', selected_places[nc], end='')
                 visited_places.remove(nc)
                 if cycle_counter == 1:
                     first_cycle.add(nc)
                 if nc == start:
                     print()
                     break
+                print(' ->', selected_cities[nc], end='')
             if len(visited_places) == 0:
                 break
-
-    print()
 
     if cycle_counter == 1:
         break
     else:
-        new_model += xsum(x[i][j] for i in first_cycle for j in V - first_cycle) >= 1
+        task3_model += xsum(x[i][j] for i in first_cycle for j in V - first_cycle) >= 1
 
-my_time = time.time() - time_start
+time_end = time.time()
+cuts_elapsed_time = time_end - time_start
 
-print()
 
 model.clear()
 
@@ -248,30 +237,22 @@ for (i, j) in product(V - {0}, V - {0}):
     if i != j:
         model += y[i] - (n + 1) * x[i][j] >= y[j] - n
 
-my_time_2 = 0
+model.verbose = 0
 time_start = time.time()
-
 model.optimize()
-
-my_time_2 = time.time() - time_start
-
-print('###')
+time_end = time.time()
+template_model_elapsed_time = time_end - time_start
 
 if model.num_solutions:
-    out.write('решение с длиной %g найдено: %s'
-              % (model.objective_value, selected_places[0]))
+    print('\n\nTemplate model solution length is ', model.objective_value)
     nc = 0
     while True:
         nc = [i for i in V if x[nc][i].x >= 0.99][0]
-        out.write(' -> %s' % selected_places[nc])
+        out.write(' -> %s' % selected_cities[nc])
         if nc == 0:
             break
     out.write('\n')
 
-print()
-print('Время методом генерации отсечений: ')
-print(my_time, ' секунд')
-print('Время встроенным методом: ')
-print(my_time_2, 'секунд')
-print()
-print('###')
+print('\n\nCuts elapsed optimizing time: ', cuts_elapsed_time, ' sec')
+print('Template model elapsed working time: ', template_model_elapsed_time, 'sec')
+print('\n ---------------------------- TASK 3 SECTION END')
